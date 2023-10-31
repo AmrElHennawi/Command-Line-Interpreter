@@ -10,6 +10,7 @@ public class Parser {
         return args;
     }
 
+    // TODO: divide input to commandName and args
     public boolean parse (String input){
         return false;
     }

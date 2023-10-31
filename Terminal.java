@@ -1,14 +1,17 @@
 public class Terminal {
     Parser parser;
 
-    public String pwd(){
-        return " ";
-    }
+    // TODO: implement each command in a method, for example:
+//    public String pwd(){
+//        return " ";
+//    }
+//
+//    public void cd(String[] args){
+//
+//    }
 
-    public void cd(String[] args){
 
-    }
-
+    // this method will choose the suitable command method to be called
     public void chooseCommandAction(){
 
     }
