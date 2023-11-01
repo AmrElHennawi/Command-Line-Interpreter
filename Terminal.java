@@ -1,24 +1,41 @@
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Stream;
+import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Scanner;
 
 public class Terminal {
+    Parser parser;
     Path currentPath;
+    ArrayList<String> terminalHistory;
     Terminal(){
         currentPath = Paths.get(System.getProperty("user.dir"));
     }
-    Parser parser;
+
+    // final => const , to keep home directory unchangable
+
+    // TODO: TO BE REMOVED [START]
+    private static final String HOME_DIRECTORY = System.getProperty("user.home");
+
+    private static String currentDirectory = HOME_DIRECTORY;
+
+    // TODO: TO BE REMOVED [END]
+
+
+
 
     // TODO: implement each command in a method, for example:
-//    public String pwd(){
-//        return " ";
-//    }
-//
-//    public void cd(String[] args){
-//
-//    }
+   public String pwd(){
+       return currentDirectory;
+   }
 
     public void mkdir(String[] args){
         for (String path : args){
@@ -71,15 +88,49 @@ public class Terminal {
         }
     }
 
+    public void terminalHistory(){
+       for (String command:terminalHistory){
+           System.out.println(command);
+       }
+    }
+
+    public void cp(String[] arg){
+            Path sourcePath = Paths.get(currentDirectory, arg[0]);
+            Path destinationPath = Paths.get(currentDirectory, arg[1]);
+            try {
+                Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("File copied: " + sourcePath + " -> " + destinationPath);
+            } catch (IOException e) {
+                System.out.println("Failed to copy file: " + sourcePath + " -> " + destinationPath);
+            }
+        
+    }
+   
+    public void rm(String arg){
+             Path filePath = Paths.get(currentDirectory, arg);
+        try {
+            Files.delete(filePath);
+            System.out.println("File removed: " + filePath);
+        } catch (NoSuchFileException e) {
+            System.out.println("No such file!");
+        } 
+         catch (IOException e) {
+            System.out.println("Failed to remove file: " + filePath);
+        }
+    }
+
 
     // this method will choose the suitable command method to be called
     public void chooseCommandAction(){
+
+
 
     }
 
     public static void main(String[] args){
 
+        
+
+
     }
-
-
 }
