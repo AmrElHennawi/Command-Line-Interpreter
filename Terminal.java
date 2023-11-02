@@ -4,12 +4,6 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Stream;
-import java.nio.file.DirectoryNotEmptyException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 
 public class Terminal {
@@ -20,21 +14,10 @@ public class Terminal {
         currentPath = Paths.get(System.getProperty("user.dir"));
     }
 
-    // final => const , to keep home directory unchangable
-
-    // TODO: TO BE REMOVED [START]
-    private static final String HOME_DIRECTORY = System.getProperty("user.home");
-
-    private static String currentDirectory = HOME_DIRECTORY;
-
-    // TODO: TO BE REMOVED [END]
-
-
-
-
     // TODO: implement each command in a method, for example:
-   public String pwd(){
-       return currentDirectory;
+   public void pwd(){
+    String currentDir = currentPath.toAbsolutePath().toString();
+       System.out.println(currentDir);
    }
 
     public void mkdir(String[] args){
@@ -95,8 +78,8 @@ public class Terminal {
     }
 
     public void cp(String[] arg){
-            Path sourcePath = Paths.get(currentDirectory, arg[0]);
-            Path destinationPath = Paths.get(currentDirectory, arg[1]);
+            Path sourcePath = Paths.get(currentPath.toString(), arg[0]);
+            Path destinationPath = Paths.get(currentPath.toString(), arg[1]);
             try {
                 Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("File copied: " + sourcePath + " -> " + destinationPath);
@@ -107,7 +90,7 @@ public class Terminal {
     }
    
     public void rm(String arg){
-             Path filePath = Paths.get(currentDirectory, arg);
+             Path filePath = Paths.get(currentPath.toString(), arg);
         try {
             Files.delete(filePath);
             System.out.println("File removed: " + filePath);
