@@ -10,6 +10,7 @@ public class Terminal {
     Parser parser;
     Path currentPath;
     ArrayList<String> terminalHistory;
+    
     Terminal(){
         currentPath = Paths.get(System.getProperty("user.dir"));
     }
@@ -100,6 +101,11 @@ public class Terminal {
          catch (IOException e) {
             System.out.println("Failed to remove file: " + filePath);
         }
+    }
+
+    public void echo(String arg)
+    {
+        System.out.println(arg);
     }
 
 
