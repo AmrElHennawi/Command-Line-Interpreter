@@ -150,6 +150,52 @@ public class Terminal {
 
     }
 
+    public void cd() //go to the home directory
+    {
+        currentPath = Paths.get(System.getProperty("user.home"));
+        System.out.println(currentPath);
+    }
+
+    public void cd(String arg)
+    {
+        if(arg.equals(".."))
+        {
+            Path parentPath = currentPath.getParent();
+            if(parentPath != null)
+            {
+                currentPath = parentPath;
+            }
+            else
+            {
+                System.out.println("No previous paths available!");
+            }
+        }
+        else //if the input is a path
+        {
+            Path newPath;
+
+            if(Paths.get(arg).isAbsolute()) //if its a full absolute path
+            {
+                newPath = Paths.get(arg);
+            }
+            else //if its relative (short) path
+            {
+                newPath = currentPath.resolve(arg).normalize();
+            }
+
+            //to check if it's a valid directory
+            if(newPath.toFile().isDirectory())
+            {
+                currentPath = newPath;
+            }
+            else
+            {
+                System.out.println("Path does not exist!");
+            }
+        }
+
+    }
+
 
     // this method will choose the suitable command method to be called
     public void chooseCommandAction(){
