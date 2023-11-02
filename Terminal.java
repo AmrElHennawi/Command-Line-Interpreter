@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Stream;
 import java.util.Scanner;
@@ -10,7 +11,7 @@ public class Terminal {
     Parser parser;
     Path currentPath;
     ArrayList<String> terminalHistory;
-    
+
     Terminal(){
         currentPath = Paths.get(System.getProperty("user.dir"));
     }
@@ -106,6 +107,47 @@ public class Terminal {
     public void echo(String arg)
     {
         System.out.println(arg);
+    }
+
+    public void ls()
+    {
+        try
+        {
+            Stream<Path> stream = Files.list(currentPath);
+
+            // Use the map() function to transform the Path objects into their respective file or directory names
+            // The getFileName() method extracts the name of each item without the full path
+            stream.map(Path::getFileName)
+                  .sorted() // Sort the names alphabetically
+                  .forEach(p -> System.out.println(p));
+
+            stream.close();
+        }
+        catch(IOException e)
+        {
+            System.out.println("Failed to list the contents of the current directory");
+        }
+    }
+
+    public void lsReversed()
+    {
+        try
+        {
+            Stream<Path> stream = Files.list(currentPath);
+
+            // Use the map() function to transform the Path objects into their respective file or directory names
+            // The getFileName() method extracts the name of each item without the full path
+            stream.map(Path::getFileName)
+                  .sorted(Comparator.reverseOrder()) // Sort the names in reverse order
+                  .forEach(p -> System.out.println(p));
+
+            stream.close();
+        }
+        catch(IOException e)
+        {
+            System.out.println("Failed to list the contents of the current directory");
+        }
+
     }
 
 
