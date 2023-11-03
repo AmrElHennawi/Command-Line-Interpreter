@@ -3,9 +3,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Objects;
 import java.util.stream.Stream;
-import java.util.Scanner;
 
 public class Terminal {
     Parser parser;
@@ -38,7 +36,7 @@ public class Terminal {
         }
     }
 
-    // precondition: arg is a directory
+    
     public void rmdir(String arg) throws IOException {
         if (arg.equals("*")) {
             Files.walkFileTree(currentPath, new SimpleFileVisitor<Path>() {
@@ -56,23 +54,27 @@ public class Terminal {
             });
         } else {
             Path filePath = Paths.get(arg);
-            try (Stream<Path> directoryContents = Files.list(filePath)) {
-                if (directoryContents.findFirst().isPresent()) {
-                    System.err.println("Directory not empty\n");
-                    return;
+            if (Files.exists(filePath) && Files.isDirectory(filePath)){
+                try (Stream<Path> directoryContents = Files.list(filePath)) {
+                    if (directoryContents.findFirst().isPresent()) {
+                        System.err.println("Directory not empty\n");
+                        return;
+                    }
                 }
-            }
 
-            try {
-                Files.delete(filePath);
-                System.out.println("Directory deleted successfully");
-            } catch (IOException e) {
-                System.err.println("Failed to delete the directory: " + e.getMessage());
+                try {
+                    Files.delete(filePath);
+                    System.out.println("Directory deleted successfully");
+                } catch (IOException e) {
+                    System.err.println("Failed to delete the directory: " + e.getMessage());
+                }
+            } else {
+                System.out.println("File does not exist or is not a directory");
             }
         }
     }
 
-    public void terminalHistory() {
+    public void printTerminalHistory() {
         for (String command : terminalHistory) {
             System.out.println(command);
         }
@@ -228,6 +230,5 @@ public class Terminal {
     }
 
     public static void main(String[] args) throws IOException {
-
     }
 }
