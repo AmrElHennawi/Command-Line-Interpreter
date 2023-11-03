@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Scanner;
 import java.util.stream.Stream;
 
 public class Terminal {
@@ -12,6 +13,8 @@ public class Terminal {
 
     Terminal() {
         currentPath = Paths.get(System.getProperty("user.dir"));
+        parser = new Parser();
+        terminalHistory = new ArrayList<String>();
     }
 
     // TODO: implement each command in a method, for example:
@@ -37,41 +40,52 @@ public class Terminal {
     }
 
     
-    public void rmdir(String arg) throws IOException {
-        if (arg.equals("*")) {
-            Files.walkFileTree(currentPath, new SimpleFileVisitor<Path>() {
-                public FileVisitResult afterVisitingDirectory(Path directory, IOException exception)
-                        throws IOException {
-                    if (Files.isDirectory(directory)) {
-                        try (Stream<Path> directoryContents = Files.list(directory)) {
-                            if (directoryContents.findAny().isEmpty()) {
-                                Files.delete(directory);
-                            }
-                        }
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } else {
-            Path filePath = Paths.get(arg);
-            if (Files.exists(filePath) && Files.isDirectory(filePath)){
-                try (Stream<Path> directoryContents = Files.list(filePath)) {
-                    if (directoryContents.findFirst().isPresent()) {
-                        System.err.println("Directory not empty\n");
-                        return;
-                    }
-                }
+    // public void rmdir(String arg) throws IOException {
+    //     if (arg.equals("*")) {
+    //         Files.walkFileTree(currentPath, new SimpleFileVisitor<Path>() {
+    //             public FileVisitResult afterVisitingDirectory(Path directory, IOException exception)
+    //                     throws IOException {
+    //                 if (Files.isDirectory(directory)) {
+    //                     try (Stream<Path> directoryContents = Files.list(directory)) {
+    //                         if (directoryContents.findAny().isEmpty()) {
+    //                             Files.delete(directory);
+    //                         }
+    //                     }
+    //                 }
+    //                 return FileVisitResult.CONTINUE;
+    //             }
+    //         });
+    //     } else {
+    //         Path filePath = Paths.get(arg);
+    //         if (Files.exists(filePath) && Files.isDirectory(filePath)){
+    //             try (Stream<Path> directoryContents = Files.list(filePath)) {
+    //                 if (directoryContents.findFirst().isPresent()) {
+    //                     System.err.println("Directory not empty\n");
+    //                     return;
+    //                 }
+    //             }
 
-                try {
-                    Files.delete(filePath);
-                    System.out.println("Directory deleted successfully");
-                } catch (IOException e) {
-                    System.err.println("Failed to delete the directory: " + e.getMessage());
-                }
-            } else {
-                System.out.println("File does not exist or is not a directory");
-            }
+    //             try {
+    //                 Files.delete(filePath);
+    //                 System.out.println("Directory deleted successfully");
+    //             } catch (IOException e) {
+    //                 System.err.println("Failed to delete the directory: " + e.getMessage());
+    //             }
+    //         } else {
+    //             System.out.println("File does not exist or is not a directory");
+    //         }
+    //     }
+    // }
+
+    public void addToHistory()
+    {
+        String command = "";
+        command += parser.commandName;
+        for (String arg : parser.args) {
+            command = command + " " + arg;
         }
+
+        terminalHistory.add(command);
     }
 
     public void printTerminalHistory() {
@@ -104,8 +118,13 @@ public class Terminal {
         }
     }
 
-    public void echo(String arg) {
-        System.out.println(arg);
+    public void echo(String[] args) {
+        
+        for (String arg : args) {
+            System.out.print(arg + " ");
+        }
+
+        System.out.println();
     }
 
     public void ls() {
@@ -146,7 +165,7 @@ public class Terminal {
     public void cd() // go to the home directory
     {
         currentPath = Paths.get(System.getProperty("user.home"));
-        System.out.println(currentPath);
+        // System.out.println(currentPath);
     }
 
     public void cd(String arg) {
@@ -157,6 +176,7 @@ public class Terminal {
             } else {
                 System.out.println("No previous paths available!");
             }
+
         } else // if the input is a path
         {
             Path newPath;
@@ -226,9 +246,110 @@ public class Terminal {
 
     // this method will choose the suitable command method to be called
     public void chooseCommandAction() {
+        addToHistory();
+        switch (parser.commandName) {
+            case "echo":
+                echo(parser.args);
+                break;
+
+            case "pwd":
+                pwd();
+                break;
+
+            case "cd":
+                if(parser.args.length == 0)
+                {
+                    cd();
+                    break;
+                }
+                else
+                {
+                    cd(parser.args[0]);
+                    break;
+                }
+
+            case "ls":
+                if(parser.args.length == 0)
+                {
+                    ls();
+                    break;
+                }
+                else if(parser.args[0].equals("-r"))
+                {
+                    lsReversed();;
+                    break;
+                }
+            
+            case "cp":
+                cp(parser.args);
+                break;
+            
+            case "rm":
+                rm(parser.args[0]);
+                break;
+
+            case "cat":
+                if(parser.args.length == 1)
+                {
+                    cat(parser.args[0]);
+                    break;
+                }
+                else if(parser.args.length == 2)
+                {
+                    cat(parser.args[0],parser.args[1]);
+                    break;
+                }
+                else
+                {
+                    System.out.println("Invalid Command!");
+                    break;
+                }
+
+            case "wc":
+                wc(parser.args[0]);
+                break;
+            
+            case "touch":
+                touch(parser.args[0]);
+                break;
+                
+            case "mkdir":
+                mkdir(parser.args);
+                break;
+            
+            case "history":
+                printTerminalHistory();
+                break;
+                
+            case "exit":
+                break;
+
+            default:
+                System.out.println("Invalid Command!");
+                break;
+        }
+
 
     }
 
     public static void main(String[] args) throws IOException {
+
+        Terminal terminal = new Terminal();
+        Scanner scanner = new Scanner(System.in);
+
+        //taking the first input
+        System.out.print(terminal.currentPath + "> ");
+        String input = scanner.nextLine();
+        terminal.parser.parse(input);
+        terminal.chooseCommandAction();
+
+        while(!input.equals("exit"))
+        {
+            System.out.print(terminal.currentPath + "> ");
+            input = scanner.nextLine();
+            terminal.parser.parse(input);
+            terminal.chooseCommandAction();
+        }
+
     }
 }
