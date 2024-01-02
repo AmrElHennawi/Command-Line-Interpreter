@@ -29,7 +29,7 @@ public class Terminal {
             terminal.parser.parse(input);
             terminal.chooseCommandAction();
         }
-
+        scanner.close();
     }
 
     // ----------------------------------------------------------------------------------------
@@ -317,7 +317,6 @@ public class Terminal {
     public void cd() // go to the home directory
     {
         currentPath = Paths.get(System.getProperty("user.home"));
-        // System.out.println(currentPath);
     }
 
     // ----------------------------------------------------------------------------------------
