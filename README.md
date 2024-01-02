@@ -7,7 +7,7 @@ Welcome to our Command Line Interpreter (CLI) project.
 This repository contains a Java-based Command Line Interpreter (CLI) designed to operate on your computer's file system. Users can enter commands through the keyboard, and the CLI parses and executes these commands. The CLI keeps accepting different commands from the user until the user enters "exit," at which point the CLI terminates.
 
 **Program Structure:**
-Our project is organized into two major classes: `Parser` and `Terminal`. The `Parser` class handles the parsing of user input into command names and arguments, while the `Terminal` class contains implementations of various commands, including `echo`, `pwd`, `cd`, `ls`, `mkdir`, `rmdir`, `touch`, `cp`, `rm`, `cat`, `wc`, `>` (output redirection), `>>` (append to file), and `history`.
+Our project is organized into two major classes: `Parser` and `Terminal`. The `Parser` class handles the parsing of user input into command names and arguments, while the `Terminal` class contains implementations of various commands, including `echo`, `pwd`, `cd`, `ls`, `mkdir`, `rmdir`, `touch`, `cp`, `rm`, `cat`, `wc`, `history`, and `exit`.
 
 **Features:**
 - Execute a variety of file system operations through a user-friendly command-line interface.
